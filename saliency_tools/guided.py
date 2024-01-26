@@ -37,15 +37,11 @@ class GuidedBackProp:
             """
             self.forward_relu_outputs.append(ten_out)
 
-        # Loop through layers, hook up ReLUs
-<<<<<<< Updated upstream
-        for module in self.model.modules():
-=======
-        for pos, module in self.model.features._modules.items():
->>>>>>> Stashed changes
-            if isinstance(module, torch.nn.ReLU):
-                module.register_backward_hook(relu_backward_hook_function)
-                module.register_forward_hook(relu_forward_hook_function)
+            # Loop through layers, hook up ReLUs
+            for module in self.model.modules():
+                if isinstance(module, torch.nn.ReLU):
+                    module.register_backward_hook(relu_backward_hook_function)
+                    module.register_forward_hook(relu_forward_hook_function)
 
     def generate_gradients(self, input_image, target_class):
         self.model(input_image)[0, target_class].backward()

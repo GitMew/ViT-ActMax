@@ -1,6 +1,6 @@
+import torch
 from torch.utils import model_zoo
 from torchvision.datasets import ImageFolder
-import torch
 from torchvision.transforms import ToTensor, ToPILImage
 
 

@@ -1,16 +1,16 @@
 import torch
 import torchvision.transforms
 
-from augmentation import Clip, Tile, Jitter, RepeatBatch, ColorJitter
-from augmentation.pre import GaussianNoise
-from hooks.transformer.vit import ViTAttHookHolder, ViTGeLUHook
-from inversion import ImageNetVisualizer
-from inversion.utils import new_init
-from loss import LossArray, TotalVariation
-from loss.image_net import ViTFeatHook, ViTEnsFeatHook
-from model import model_library
-from saver import ExperimentSaver
-from utils import exp_starter_pack
+from .augmentation import Clip, Tile, Jitter, RepeatBatch, ColorJitter
+from .augmentation.pre import GaussianNoise
+from .hooks.transformer.vit import ViTAttHookHolder, ViTGeLUHook
+from .inversion import ImageNetVisualizer
+from .inversion.utils import new_init
+from .loss import LossArray, TotalVariation
+from .loss.image_net import ViTFeatHook, ViTEnsFeatHook
+from .model import model_library
+from .saver import ExperimentSaver
+from .utils import exp_starter_pack
 
 
 def visualize_feature(layer, feature):

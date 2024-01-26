@@ -1,5 +1,5 @@
 from .base import TimmModel
-from model.library.base import ModelLibrary
+from ....model.library.base import ModelLibrary
 
 
 class Swin(TimmModel):

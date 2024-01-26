@@ -1,9 +1,9 @@
 import timm
-
-from datasets import image_net
-from model.augmented import AugmentedModel
-from model.library.base import InvertModel
 import torch
+
+from ....datasets import image_net
+from ....model.augmented import AugmentedModel
+from ....model.library.base import InvertModel
 
 
 class TransformerModel(InvertModel):

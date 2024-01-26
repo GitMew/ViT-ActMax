@@ -1,6 +1,6 @@
 import torch
 from torch import nn as nn
-from datasets.normalizer import Normalizer
+from ...datasets.normalizer import Normalizer
 
 
 class FakeBatchNorm(nn.Module):

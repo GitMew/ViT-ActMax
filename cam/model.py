@@ -1,7 +1,7 @@
-from hooks.transformer.vit import ViTAttHookHolder
 import torch
 import numpy as np
 
+from ..hooks.transformer.vit import ViTAttHookHolder
 
 @torch.no_grad()
 def project_back(act: torch.tensor) -> torch.tensor:

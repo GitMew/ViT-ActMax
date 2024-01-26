@@ -1,9 +1,9 @@
 from torch.utils import model_zoo
-
-from model.library.base import InvertModel, ModelLibrary
-from datasets import image_net
 from torch import nn
 from torchvision.models import resnet50
+
+from ....model.library.base import InvertModel, ModelLibrary
+from ....datasets import image_net
 
 
 def robust_resnet50():

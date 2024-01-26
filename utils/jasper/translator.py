@@ -1,7 +1,8 @@
 import torch
 
-from datasets.audio.librispeech.nvidia.manifest import Manifest
-from model.jasper import GreedyCTCDecoder
+# FIXME: Code so old the dependencies don't even exist anymore
+from ...datasets.audio.librispeech.nvidia.manifest import Manifest
+from ...model.jasper import GreedyCTCDecoder
 
 
 class Translator:

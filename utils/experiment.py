@@ -4,7 +4,7 @@ import random
 from argparse import Namespace
 import time
 
-from args import Args
+from ..args import Args
 
  
 def _load(file_address: str) -> int:

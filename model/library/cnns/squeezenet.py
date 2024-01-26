@@ -1,6 +1,6 @@
 from torchvision.models.squeezenet import squeezenet1_0, squeezenet1_1
 
-from model.library.base import ModelLibrary, TorchVisionModel
+from ....model.library.base import ModelLibrary, TorchVisionModel
 
 
 class SqueezeNet(TorchVisionModel):

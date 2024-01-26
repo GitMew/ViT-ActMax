@@ -3,7 +3,7 @@ import pdb
 import torch
 from typing import Union
 
-from cam.activation_helper import ActivationHelper
+from .activation_helper import ActivationHelper
 from .model import ViTPatchFeatWrapper
 
 

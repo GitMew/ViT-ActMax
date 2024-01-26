@@ -1,7 +1,7 @@
 import os
 import torch
-import torchvision.transforms
 from torch.utils.data import Dataset
+import torchvision.transforms
 from torchvision.datasets.folder import default_loader
 
 

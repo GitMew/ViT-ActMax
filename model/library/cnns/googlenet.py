@@ -1,6 +1,6 @@
 from torchvision.models.googlenet import googlenet
 
-from model.library.base import ModelLibrary, TorchVisionModel
+from ....model.library.base import ModelLibrary, TorchVisionModel
 
 
 class GoogleNet(TorchVisionModel):

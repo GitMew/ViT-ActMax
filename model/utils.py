@@ -1,9 +1,9 @@
 from torch import nn as nn
+from torchvision.models import resnet18
 
 from .augmented import BNModel
-from datasets.imagenet import image_net
-from loss import BaseFakeBN
-from torchvision.models import resnet18
+from ..datasets.imagenet import image_net
+from ..loss import BaseFakeBN
 
 
 def default_bn():

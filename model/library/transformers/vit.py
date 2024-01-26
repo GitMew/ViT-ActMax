@@ -1,8 +1,8 @@
 import torch
-from pytorch_pretrained_vit import ViT as ActualVit
 
-from datasets import weird_image_net
-from model.library.base import ModelLibrary
+from ....lib.pytorch_pretrained_vit import ViT as ActualVit
+from ....datasets import weird_image_net
+from ....model.library.base import ModelLibrary
 from .base import TransformerModel
 
 

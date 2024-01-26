@@ -1,5 +1,5 @@
 import torch.nn as nn
-from utils.iterators import ItemIterator
+from ..utils.iterators import ItemIterator
 
 
 class HookHolder(ItemIterator):

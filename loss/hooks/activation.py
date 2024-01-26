@@ -1,7 +1,8 @@
 import torch
 from torch import nn as nn
-from hooks.base import BasicHook
 from datetime import datetime
+
+from ...hooks.base import BasicHook
 
 
 class AbsActivationHook(BasicHook):

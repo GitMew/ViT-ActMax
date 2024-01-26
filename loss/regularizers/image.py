@@ -2,7 +2,7 @@ import torch
 import pdb
 from torch import nn as nn
 
-from datasets import Normalizer
+from ...datasets import Normalizer
 
 
 class TotalVariation(nn.Module):

@@ -1,7 +1,7 @@
 import torch
 
-from datasets import image_net
-from model.library.base import ModelLibrary
+from ....datasets import image_net
+from ....model.library.base import ModelLibrary
 from .base import TransformerModel
 
 

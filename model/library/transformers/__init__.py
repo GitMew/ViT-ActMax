@@ -1,6 +1,5 @@
 from .vit import vit_models
 from .deit import deit_models
-from model.library.base import ModelLibrary
 from .coat import coat_models
 from .convit import convit_models
 # from .levit import levit_models Cannot backward twice for some reason!
@@ -11,6 +10,7 @@ from .swin import swin_models
 from .twin import twin_models
 from .clip import clip_models
 
+from ....model.library.base import ModelLibrary
 """
 ResNetModel_resnext50_32x4d 17
 """

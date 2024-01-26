@@ -4,9 +4,9 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
-from loss import LossArray
+from ..loss import LossArray
 
-from saver import AbstractSaver
+from ..saver import AbstractSaver
 
 
 class ImageNetVisualizer:

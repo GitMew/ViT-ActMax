@@ -9,7 +9,7 @@ from .shufflenet import shufflenets
 from .squeezenet import squeezenets
 from .vggs import vggs
 
-from model.library.base import ModelLibrary
+from ....model.library.base import ModelLibrary
 from .robust import robust_models
 
 convolutional_models = ModelLibrary(

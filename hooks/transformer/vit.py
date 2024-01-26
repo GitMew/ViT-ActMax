@@ -1,10 +1,11 @@
 import pdb
 
-from clip.model import QuickGELU
-from torch import nn
-from pytorch_pretrained_vit.transformer import MultiHeadedSelfAttention, PositionWiseFeedForward
+from ...lib.clip.model import QuickGELU
+from ...lib.pytorch_pretrained_vit.transformer import MultiHeadedSelfAttention, PositionWiseFeedForward
 from ..base import BasicHook
+
 import torch
+from torch import nn
 from torch.nn import functional as F
 
 

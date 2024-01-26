@@ -1,6 +1,6 @@
 from torchvision.models.densenet import densenet121, densenet161, densenet169, densenet201
 
-from model.library.base import ModelLibrary, TorchVisionModel
+from ....model.library.base import ModelLibrary, TorchVisionModel
 
 
 class DensNet(TorchVisionModel):

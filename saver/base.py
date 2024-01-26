@@ -24,7 +24,9 @@ class AbstractSaver:
         return "{}/{}.{}".format(par, child, self.extension)
 
     def save(self, result: torch.Tensor, *path):
-        self.save_function(result, self._get_mkdir_path(*path))
+        full_path = self._get_mkdir_path(*path)
+        print("Saving to", full_path)
+        self.save_function(result, full_path)
         self._id += 1
 
     def save_function(self, result: Any, path: str):

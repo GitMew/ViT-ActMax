@@ -1,8 +1,8 @@
 import torch
 from torch import nn
 
-from datasets import Normalizer, image_net
-from utils.iterators import ItemIterator
+from ...datasets import Normalizer, image_net
+from ...utils.iterators import ItemIterator
 
 
 class InvertModel(ItemIterator):

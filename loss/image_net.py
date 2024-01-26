@@ -1,15 +1,15 @@
 import pdb
 
+import numpy as np
 import torch
 
-from datasets import Normalizer
-from hooks.transformer.vit import ViTAttHookHolder, ViTAbsHookHolder
+from ..datasets import Normalizer
+from ..hooks.transformer.vit import ViTAttHookHolder, ViTAbsHookHolder
+from ..hooks import TimedHookHolder, LayerHook
 from .base import InvLoss
 from .regularizers import TotalVariation as BaseTotalVariation, FakeColorDistribution as AbstractColorDistribution
 from .regularizers import FakeBatchNorm as BaseFakeBN, NormalVariation as BaseNormalVariation
 from .regularizers import ColorVariation as BaseColorVariation
-from hooks import TimedHookHolder, LayerHook
-import numpy as np
 
 
 class MatchBatchNorm(InvLoss):
