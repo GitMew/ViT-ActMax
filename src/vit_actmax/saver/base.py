@@ -1,27 +1,32 @@
 import os
 from typing import Any
+from pathlib import Path
 
 import torch
-
-from utils.experiment import _get_exp_name
 import torchvision
+
+from ..utils.experiment import _get_exp_name
+
+
+BASE_OUTPUT_DIRECTORY = Path(os.getcwd()) / "_output-actmax"  # Used to be called "desktop", but... who does that?
+BASE_OUTPUT_DIRECTORY.mkdir(parents=True, exist_ok=True)
 
 
 class AbstractSaver:
     def __init__(self, extension: str, folder: str = None, save_id: bool = False):
-        self.folder = _get_exp_name() if folder is None else folder
+        subfolder = Path(_get_exp_name() if folder is None else folder)
+        self.subfolder = subfolder / (extension + "_" + self.__class__.__name__)
         self._id = 0
         self.extension = extension
-        self.folder = '{}/{}_{}'.format(self.folder, self.extension, self.__class__.__name__)
         self.save_id = save_id
 
     def _get_mkdir_path(self, *path):
-        path = [str(folder) for folder in path]
-        to_join = '_'.join(path)
-        child = '{}_{}'.format(self._id, to_join) if self.save_id else to_join
-        par = os.path.join('desktop', self.folder)
-        os.makedirs(par, exist_ok=True)
-        return "{}/{}.{}".format(par, child, self.extension)
+        stem = "_".join(map(str, path))
+        if self.save_id:
+            stem = f"{self._id}_" + stem
+        parent = BASE_OUTPUT_DIRECTORY / self.subfolder
+        parent.mkdir(exist_ok=True)
+        return (parent / stem).with_suffix(self.extension).as_posix()
 
     def save(self, result: torch.Tensor, *path):
         full_path = self._get_mkdir_path(*path)

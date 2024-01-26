@@ -41,16 +41,20 @@ def _time():
 
 
 def _get_exp_name() -> str:
+    """
+    Reads the input argument stream to figure out the name of the current running experiment.
+    """
     args = Args.get_instance()
     exp_no = str(get_exp_no())
     args.get_args().exp_no = exp_no
-    name_list = [exp_no, _time()]
+
+    name_parts = [exp_no, _time()]
     exp_name = args.get_args().experiment
     if str(exp_name) != 'None':
-        name_list.append(exp_name)
-    name_list.append(args.get_name())
-    name = '_'.join(name_list)
-    return name
+        name_parts.append(exp_name)
+    name_parts.append(args.get_name())
+
+    return "_".join(name_parts)
 
 
 def _fancy_print():
