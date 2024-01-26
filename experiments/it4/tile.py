@@ -1,13 +1,13 @@
 import torch
-from augmentation import Clip, Tile, Jitter
-from hooks.transformer.vit import ViTAttHookHolder
-from inversion import ImageNetVisualizer
-from inversion.utils import new_init
-from loss import LossArray, TotalVariation
-from loss.image_net import ViTFeatHook
-from model import model_library
-from saver import ExperimentSaver
-from utils import exp_starter_pack
+from vit_actmax.augmentation import Clip, Tile, Jitter
+from vit_actmax.hooks.transformer.vit import ViTAttHookHolder
+from vit_actmax.inversion import ImageNetVisualizer
+from vit_actmax.inversion.utils import new_init
+from vit_actmax.loss import LossArray, TotalVariation
+from vit_actmax.loss.image_net import ViTFeatHook
+from vit_actmax.model import model_library
+from vit_actmax.saver import ExperimentSaver
+from vit_actmax.utils import exp_starter_pack
 
 
 def main():

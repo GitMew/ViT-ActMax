@@ -1,15 +1,15 @@
 import torch
-from augmentation import Clip, Tile, Jitter, RepeatBatch, ColorJitter
-from augmentation.pre import GaussianNoise
-from hooks.transformer.vit import ViTAttHookHolder, ViTGeLUHook, ReconstructionViTGeLUHook
-from inversion import ImageNetVisualizer
-from inversion.utils import new_init
-from loss import LossArray, TotalVariation
-from loss.image_net import ViTFeatHook, ViTEnsFeatHook, ReconstructionLoss
-from model import model_library
-from saver import ExperimentSaver
-from utils import exp_starter_pack
-from datasets import weird_image_net
+from vit_actmax.augmentation import Clip, Tile, Jitter, RepeatBatch, ColorJitter
+from vit_actmax.augmentation.pre import GaussianNoise
+from vit_actmax.hooks.transformer.vit import ViTAttHookHolder, ViTGeLUHook, ReconstructionViTGeLUHook
+from vit_actmax.inversion import ImageNetVisualizer
+from vit_actmax.inversion.utils import new_init
+from vit_actmax.loss import LossArray, TotalVariation
+from vit_actmax.loss.image_net import ViTFeatHook, ViTEnsFeatHook, ReconstructionLoss
+from vit_actmax.model import model_library
+from vit_actmax.saver import ExperimentSaver
+from vit_actmax.utils import exp_starter_pack
+from vit_actmax.datasets import weird_image_net
 
 
 def main():

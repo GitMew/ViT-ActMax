@@ -4,8 +4,8 @@ from torch.optim.optimizer import Optimizer
 from torch.utils.data import DataLoader
 
 from runner.adversarial import Modifier
-from utils.device import to_cuda
-from utils.classification import get_acc
+from vit_actmax.utils.device import to_cuda
+from vit_actmax.utils.classification import get_acc
 from runner.status import Status, Meter
 
 

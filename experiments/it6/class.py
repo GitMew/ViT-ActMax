@@ -1,13 +1,13 @@
 import os
 import pdb
+import json
 
 import torchvision
 from torchvision.datasets.folder import default_loader
 
-from inversion import ImageNetVisualizer
-import json
-from model import model_library
-from utils import exp_starter_pack
+from vit_actmax.inversion import ImageNetVisualizer
+from vit_actmax.model import model_library
+from vit_actmax.utils import exp_starter_pack
 
 
 def main():

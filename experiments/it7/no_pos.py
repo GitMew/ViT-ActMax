@@ -2,9 +2,9 @@ import pdb
 
 import torchvision.utils
 from torch.utils.data import DataLoader
-from datasets import weird_image_net
-from model import model_library
-from utils import exp_starter_pack
+from vit_actmax.datasets import weird_image_net
+from vit_actmax.model import model_library
+from vit_actmax.utils import exp_starter_pack
 from torch import nn
 from runner import Evaluator
 import torch

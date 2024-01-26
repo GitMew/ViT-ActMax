@@ -1,20 +1,20 @@
 from torchvision.models import resnet18
 import pdb
 
-from augmentation import Clip, Jitter, Centering, RepeatBatch, Zoom, ColorJitter
-from augmentation.post import ClipSTD
-from augmentation.pre import Layered
-from datasets import image_net
-from hooks import LayerHook
-from inversion import ImageNetVisualizer
-from inversion.utils import new_init
-from loss import LossArray, TotalVariation, LayerActivationNorm, ActivationHook, MatchBatchNorm, NormalVariation
-from loss import ColorVariation
-from loss.hooks.activation import ActivationReluHook
-from loss.regularizers import FakeBatchNorm
-from model import model_library
-from saver import ExperimentSaver
-from utils import exp_starter_pack
+from vit_actmax.augmentation import Clip, Jitter, Centering, RepeatBatch, Zoom, ColorJitter
+from vit_actmax.augmentation.post import ClipSTD
+from vit_actmax.augmentation.pre import Layered
+from vit_actmax.datasets import image_net
+from vit_actmax.hooks import LayerHook
+from vit_actmax.inversion import ImageNetVisualizer
+from vit_actmax.inversion.utils import new_init
+from vit_actmax.loss import LossArray, TotalVariation, LayerActivationNorm, ActivationHook, MatchBatchNorm, NormalVariation
+from vit_actmax.loss import ColorVariation
+from vit_actmax.loss.hooks.activation import ActivationReluHook
+from vit_actmax.loss.regularizers import FakeBatchNorm
+from vit_actmax.model import model_library
+from vit_actmax.saver import ExperimentSaver
+from vit_actmax.utils import exp_starter_pack
 import torch
 
 from torchvision.models import resnet18

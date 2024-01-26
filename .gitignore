@@ -1,2 +1,3 @@
 desktop/
 .idea
+__pycache__/

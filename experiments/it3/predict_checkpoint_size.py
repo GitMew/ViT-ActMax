@@ -1,9 +1,9 @@
 import torch
 
-from hooks.transformer.vit import ViTAttHookHolder
-from model import model_library
-from utils import exp_starter_pack
-from datasets import weird_image_net
+from vit_actmax.hooks.transformer.vit import ViTAttHookHolder
+from vit_actmax.model import model_library
+from vit_actmax.utils import exp_starter_pack
+from vit_actmax.datasets import weird_image_net
 
 
 def main():

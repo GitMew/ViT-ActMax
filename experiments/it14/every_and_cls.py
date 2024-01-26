@@ -6,16 +6,16 @@ from torch.utils.data import DataLoader
 from torchvision.datasets.folder import default_loader
 from tqdm import tqdm
 
-from datasets import weird_image_net
-from model import model_library
-from model.augmented import AugmentedModel
-from utils import exp_starter_pack
+from vit_actmax.datasets import weird_image_net
+from vit_actmax.model import model_library
+from vit_actmax.model.augmented import AugmentedModel
+from vit_actmax.utils import exp_starter_pack
 import torch
 from torch import nn
 from pytorch_pretrained_vit import ViT
 
-from utils.device import to_cuda
-from utils.statistics import Meter
+from vit_actmax.utils.device import to_cuda
+from vit_actmax.utils.statistics import Meter
 
 
 class ViTInput(nn.Module):

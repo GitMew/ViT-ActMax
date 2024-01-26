@@ -1,9 +1,9 @@
 import torchvision.utils
 from torch.utils.data import DataLoader
-from saver import ExperimentSaver
-from utils import exp_starter_pack
+from vit_actmax.saver import ExperimentSaver
+from vit_actmax.utils import exp_starter_pack
 import torch
-from datasets.imagenet_boxes import BackgroundForegroundImageNet
+from vit_actmax.datasets.imagenet_boxes import BackgroundForegroundImageNet
 import torchvision.transforms as tr
 from tqdm import tqdm
 

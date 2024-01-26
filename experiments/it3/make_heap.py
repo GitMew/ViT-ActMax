@@ -6,12 +6,12 @@ import torch
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-from hooks.transformer.vit import ViTAttHookHolder
-from model import model_library
-from saver import ExperimentSaver
-from utils import exp_starter_pack
-from datasets import weird_image_net
-from utils.device import to_cuda
+from vit_actmax.hooks.transformer.vit import ViTAttHookHolder
+from vit_actmax.model import model_library
+from vit_actmax.saver import ExperimentSaver
+from vit_actmax.utils import exp_starter_pack
+from vit_actmax.datasets import weird_image_net
+from vit_actmax.utils.device import to_cuda
 
 """
 SHAPES: 

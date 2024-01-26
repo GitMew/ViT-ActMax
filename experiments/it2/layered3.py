@@ -1,15 +1,16 @@
-from augmentation import Clip
-import pdb 
-from augmentation.post import ClipSTD
-from augmentation.pre import Layered
-from hooks import LayerHook
-from inversion import ImageNetVisualizer
-from inversion.utils import new_init
-from loss import LossArray, TotalVariation, LayerActivationNorm, NormalVariation
-from loss.hooks.activation import ActivationReluHook
-from model import model_library
-from saver import ExperimentSaver
-from utils import exp_starter_pack
+import pdb
+
+from vit_actmax.augmentation import Clip
+from vit_actmax.augmentation.post import ClipSTD
+from vit_actmax.augmentation.pre import Layered
+from vit_actmax.hooks import LayerHook
+from vit_actmax.inversion import ImageNetVisualizer
+from vit_actmax.inversion.utils import new_init
+from vit_actmax.loss import LossArray, TotalVariation, LayerActivationNorm, NormalVariation
+from vit_actmax.loss.hooks.activation import ActivationReluHook
+from vit_actmax.model import model_library
+from vit_actmax.saver import ExperimentSaver
+from vit_actmax.utils import exp_starter_pack
 import torch
 
 

@@ -2,20 +2,20 @@ import torchvision.utils
 from torch.utils.data import DataLoader
 from torchvision.transforms import Compose
 
-from datasets import weird_image_net
-from hooks.transformer.vit import SimpleViTGeLUHook
-from model import model_library
+from vit_actmax.datasets import weird_image_net
+from vit_actmax.hooks.transformer.vit import SimpleViTGeLUHook
+from vit_actmax.model import model_library
 from runner.status import Meter
-from utils import exp_starter_pack
+from vit_actmax.utils import exp_starter_pack
 import torch
 from tqdm import tqdm
-from datasets.imagenet_boxes import BackgroundForegroundImageNet
+from vit_actmax.datasets.imagenet_boxes import BackgroundForegroundImageNet
 import torchvision.transforms as tr
 from torch import nn
 import pdb
 
-from utils.classification import get_acc, get_acc5
-from utils.device import to_cuda
+from vit_actmax.utils.classification import get_acc, get_acc5
+from vit_actmax.utils.device import to_cuda
 
 
 @torch.no_grad()

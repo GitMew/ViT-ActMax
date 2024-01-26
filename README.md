@@ -1,6 +1,6 @@
 ## What do Vision Transformers Learn? A Visual Exploration
 
-![Visualizations](readme_images/1.png)
+![Visualizations](doc/1.png)
 
 ### ViT Models:
 
