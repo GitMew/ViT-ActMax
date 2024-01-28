@@ -1,3 +1,6 @@
+import re
+from typing import List, Iterable
+
 import torch
 from torch import nn
 
@@ -45,20 +48,26 @@ class ModelLibrary(ItemIterator):
     def iterator_item(self):
         return self.models
 
-    def __init__(self, other_models: list):
-        self.models = [m for l in other_models for m in l]
+    def __init__(self, other_models: List[Iterable]):
+        self.models = [model
+                       for iterable in other_models
+                           for model in iterable]
 
     @property
     def names(self) -> dict:
         return {i: self[i].name for i in range(len(self))}
 
     def __str__(self):
-        out = ''
+        result = ""
+        current_prefix = ""
         for i in range(len(self)):
-            out +=f'{i}:\t{self[i].name}\n'
-            if i % 10 == 9:
-                out += '\n'
-        return out
+            name   = self[i].name
+            prefix = name[:re.search("[0-9]|_", name).start()]
+            if prefix != current_prefix:
+                current_prefix = prefix
+                result += "\n"
+            result += f"{i}:\t{name}\n"
+        return result[1:-1]
 
     @staticmethod
     def _fw_score(q: str, reference: str) -> int:

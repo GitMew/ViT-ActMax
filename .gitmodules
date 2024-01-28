@@ -1,6 +1,6 @@
 [submodule "lib/submodules/CLIP"]
-	path = lib/submodules/CLIP
+	path = src/vit_actmax/lib/submodules/CLIP
 	url = https://github.com/openai/CLIP
 [submodule "lib/submodules/PyTorch-Pretrained-ViT"]
-	path = lib/submodules/PyTorch-Pretrained-ViT
+	path = src/vit_actmax/lib/submodules/PyTorch-Pretrained-ViT
 	url = https://github.com/lukemelas/PyTorch-Pretrained-ViT

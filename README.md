@@ -39,7 +39,8 @@ After an editable install, test whether your GPU can handle the heat by running
 python experiments/it15/vis35.py --network 35 --method "in_feat" --layer 4 --feature 20 -v 0.1
 ```
 What these parameters mean:
-- `network`: pretrained network identifier (see the list below). Ranges from 1 to 100. Model 35 corresponds to ViT-B/32.
+- `network`: pretrained network identifier. Ranges from 0 to 99. Model 35 corresponds to ViT-B/32.
+   - To get the list of networks, see the list below or run the `show_models.py` script.
 - `method`: what to maximise. Can be one of:
    - `in_feat`: activation of a hidden neurons in an MLP.
    - `out_feat`: activation at an output of an MLP.

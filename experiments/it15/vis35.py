@@ -15,7 +15,7 @@ def main():
     args = exp_starter_pack()[1]
     layer, feature, grid, network = args.layer, args.feature, args.grid, args.network
     model, image_size, _, _ = model_library[network]()
-    import pdb; pdb.set_trace()
+    # import pdb; pdb.set_trace()
     tv = args.tv
 
     saver = ExperimentSaver(f'VisL{layer}_F{feature}_N{network}_TV{tv}', save_id=True, disk_saver=True)
