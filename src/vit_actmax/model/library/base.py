@@ -61,8 +61,9 @@ class ModelLibrary(ItemIterator):
         result = ""
         current_prefix = ""
         for i in range(len(self)):
-            name   = self[i].name
-            prefix = name[:re.search("[0-9]|_", name).start()]
+            name = self[i].name
+            prefix_end = re.search("[0-9]|_", name)
+            prefix = name[:prefix_end.start()] if prefix_end else name
             if prefix != current_prefix:
                 current_prefix = prefix
                 result += "\n"
