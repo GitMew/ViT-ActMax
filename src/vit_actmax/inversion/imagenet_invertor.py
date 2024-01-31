@@ -24,7 +24,7 @@ class ImageNetVisualizer:
         self.steps = steps
         self.lr = lr
 
-    def __call__(self, img: torch.tensor = None, optimizer: optim.Optimizer = None):
+    def __call__(self, img: torch.tensor = None, optimizer: optim.Optimizer = None, file_prefix: str=""):
         img = img.detach().clone().to('cuda:0').requires_grad_()
 
         optimizer = optimizer if optimizer is not None else optim.Adam([img], lr=self.lr, betas=(0.5, 0.99), eps=1e-8)
@@ -40,7 +40,7 @@ class ImageNetVisualizer:
             if i % self.print_every == 0:
                 print(f'{i}\t{self.loss}', flush=True)
             if i % self.save_every == 0 and self.saver is not None:
-                self.saver.save(img, i)
+                self.saver.save(img, file_prefix + "_it" + str(i).zfill(3))
 
             # loss.backward(retain_graph=True)
             loss.backward()
@@ -52,5 +52,7 @@ class ImageNetVisualizer:
             self.loss.reset()
             torch.cuda.empty_cache()
 
+        if self.steps % self.save_every != 0 and self.saver is not None:  # We know i == self.steps was the last iteration that was done.
+            self.saver.save(img, file_prefix + "_it" + str(self.steps).zfill(3))
         optimizer.state = collections.defaultdict(dict)
         return img

@@ -1,7 +1,8 @@
 import pdb
+from typing import Tuple
 
-from .....lib.clip.model import QuickGELU
-from .....lib.pytorch_pretrained_vit.transformer import MultiHeadedSelfAttention, PositionWiseFeedForward
+from ...lib.clip.model import QuickGELU
+from ...lib.pytorch_pretrained_vit.transformer import MultiHeadedSelfAttention, PositionWiseFeedForward
 from ..base import BasicHook
 
 import torch
@@ -34,19 +35,31 @@ class ViTAbsHookHolder(nn.Module):
 
 
 class ViTAttHookHolder(ViTAbsHookHolder):
-    def __init__(self, classifier: nn.Module, in_feat: bool = False, keys: bool = False, queries: bool = False,
-                 values: bool = False, scores: bool = False, out_feat: bool = False, sl: slice = None):
+    def __init__(self, classifier: nn.Module, sl: slice = None,
+                 in_feat: bool = False, out_feat: bool = False, keys: bool = False, queries: bool = False, values: bool = False,
+                 scores: bool = False):
         super().__init__()
         sl = slice(None, None) if sl is None else sl
-        self.just_save = [m for m in classifier.modules() if isinstance(m, MultiHeadedSelfAttention)]
-        self.attentions = self.just_save[sl]
-        self.in_features = [ViTHook(m, False, 'in') for m in self.attentions] if in_feat else None
-        self.keys = [ViTHook(a.proj_k, True, 'k') for a in self.attentions] if keys else None
-        self.queries = [ViTHook(a.proj_q, True, 'q') for a in self.attentions] if queries else None
-        self.value = [ViTHook(a.proj_v, True, 'v') for a in self.attentions] if values else None
+        all_self_attention_blocks = [m for m in classifier.modules() if isinstance(m, MultiHeadedSelfAttention)]
+        self.relevant_self_attention_blocks = all_self_attention_blocks[sl]
         self.score_behaviour = scores
-        self.out_features = [ViTHook(m, True, 'out') for m in self.attentions] if out_feat else None
-        # print(in_feat, keys, queries, values, out_feat)
+
+        self.in_features  = None
+        self.out_features = None
+        self.keys         = None
+        self.queries      = None
+        self.value        = None
+
+        if in_feat:
+            self.in_features = [ViTHook(m, False, 'in') for m in self.relevant_self_attention_blocks]
+        if out_feat:
+            self.out_features = [ViTHook(m, True, 'out') for m in self.relevant_self_attention_blocks]
+        if keys:
+            self.keys = [ViTHook(a.proj_k, True, 'k') for a in self.relevant_self_attention_blocks]
+        if queries:
+            self.queries = [ViTHook(a.proj_q, True, 'q') for a in self.relevant_self_attention_blocks]
+        if values:
+            self.value = [ViTHook(a.proj_v, True, 'v') for a in self.relevant_self_attention_blocks]
 
         self.model = classifier
 
@@ -55,9 +68,9 @@ class ViTAttHookHolder(ViTAbsHookHolder):
         # for a in self.attentions:
         #     a.scores = None
         # return None
-        return [FakeHookWrapper(a.scores) for a in self.attentions] if self.score_behaviour else None
+        return [FakeHookWrapper(a.scores) for a in self.relevant_self_attention_blocks] if self.score_behaviour else None
 
-    def forward(self, x: torch.tensor) -> ({}, torch.tensor):
+    def forward(self, x: torch.tensor) -> Tuple[dict, torch.tensor]:
         # for a in self.just_save:
         #     a.scores = None
         out = None
@@ -69,6 +82,7 @@ class ViTAttHookHolder(ViTAbsHookHolder):
         return {n: o for n, o in zip(names, options) if o is not None}, out
 
 
+GELUHOOK_RESULT_NAME = "ffnn"
 class ViTGeLUHook(ViTAbsHookHolder):
     def __init__(self, classifier: nn.Module, sl: slice = None):
         super().__init__()
@@ -76,13 +90,13 @@ class ViTGeLUHook(ViTAbsHookHolder):
         sl = slice(None, None) if sl is None else sl
         self.just_save = [m for m in classifier.modules() if isinstance(m, PositionWiseFeedForward)]
         self.attentions = self.just_save[sl]
-        self.high = [ViTHook(m.fc1, True, 'high') for m in self.attentions]
+        self.high = [ViTHook(m.fc1, True, GELUHOOK_RESULT_NAME) for m in self.attentions]
 
-    def forward(self, x: torch.tensor) -> ({}, torch.tensor):
+    def forward(self, x: torch.tensor) -> Tuple[dict, torch.tensor]:
         out = self.cl(x)
         options = [self.high]
         options = [[F.gelu(o.activations) for o in l] if l is not None else None for l in options]
-        names = ['high']
+        names = [GELUHOOK_RESULT_NAME]
         return {n: o for n, o in zip(names, options) if o is not None}, out
 
 
@@ -95,7 +109,7 @@ class ClipGeLUHook(ViTAbsHookHolder):
         self.attentions = self.just_save[sl]
         self.high = [ViTHook(m, True, 'high') for m in self.attentions]
 
-    def forward(self, x: torch.tensor) -> ({}, torch.tensor):
+    def forward(self, x: torch.tensor) -> Tuple[dict, torch.tensor]:
         out = self.cl(x)
         options = [self.high]
         options = [[o.activations.transpose(0, 1) for o in l if o.activations is not None] if l is not None else None

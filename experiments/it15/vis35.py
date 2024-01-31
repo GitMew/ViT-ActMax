@@ -1,7 +1,7 @@
 import torch
 from vit_actmax.augmentation import Clip, Tile, Jitter, RepeatBatch, ColorJitter
 from vit_actmax.augmentation.pre import GaussianNoise
-from vit_actmax.hooks.transformer.vit import ViTAttHookHolder, ViTGeLUHook
+from vit_actmax.hooks.transformer.vit import ViTAttHookHolder, ViTGeLUHook, GELUHOOK_RESULT_NAME
 from vit_actmax.inversion import ImageNetVisualizer
 from vit_actmax.inversion.utils import new_init
 from vit_actmax.loss import LossArray, TotalVariation
@@ -21,7 +21,7 @@ def main():
     saver = ExperimentSaver(f'VisL{layer}_F{feature}_N{network}_TV{tv}', save_id=True, disk_saver=True)
 
     loss = LossArray()
-    loss += ViTEnsFeatHook(ViTGeLUHook(model, sl=slice(layer, layer + 1)), key='high', feat=feature, coefficient=1)
+    loss += ViTEnsFeatHook(ViTGeLUHook(model, sl=slice(layer, layer + 1)), key=GELUHOOK_RESULT_NAME, feat=feature, coefficient=1)
     loss += TotalVariation(2, image_size, coefficient=0.0005 * tv)
 
     pre, post = torch.nn.Sequential(RepeatBatch(8), ColorJitter(8, shuffle_every=True),

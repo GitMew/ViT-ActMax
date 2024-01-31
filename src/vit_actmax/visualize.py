@@ -3,7 +3,7 @@ import torchvision.transforms
 
 from .augmentation import Clip, Tile, Jitter, RepeatBatch, ColorJitter
 from .augmentation.pre import GaussianNoise
-from .hooks.transformer.vit import ViTAttHookHolder, ViTGeLUHook
+from .hooks.transformer.vit import ViTAttHookHolder, ViTGeLUHook, GELUHOOK_RESULT_NAME
 from .inversion import ImageNetVisualizer
 from .inversion.utils import new_init
 from .loss import LossArray, TotalVariation
@@ -29,7 +29,7 @@ def visualize_feature(layer, feature):
     saver = ExperimentSaver(f'VisL{layer}_F{feature}_N{network}_TV{tv}', save_id=True, disk_saver=True)
 
     loss = LossArray()
-    loss += ViTEnsFeatHook(ViTGeLUHook(model, sl=slice(layer, layer + 1)), key='high', feat=feature, coefficient=1)
+    loss += ViTEnsFeatHook(ViTGeLUHook(model, sl=slice(layer, layer + 1)), key=GELUHOOK_RESULT_NAME, feat=feature, coefficient=1)
     loss += TotalVariation(2, image_size, coefficient=0.0005 * tv)
 
     pre, post = torch.nn.Sequential(RepeatBatch(8), ColorJitter(8, shuffle_every=True),
@@ -41,6 +41,7 @@ def visualize_feature(layer, feature):
     # saver.save(image, 'final')
     image = torchvision.transforms.ToPILImage()(image[0].detach().cpu())
     return image
+
 
 if __name__ == '__main__':
     visualize_feature(3, 4)
