@@ -12,6 +12,11 @@ from .regularizers import TotalVariation as BaseTotalVariation, FakeColorDistrib
 from .regularizers import FakeBatchNorm as BaseFakeBN, NormalVariation as BaseNormalVariation
 from .regularizers import ColorVariation as BaseColorVariation
 
+ImageSize = Union[int,Tuple[int,int]]
+
+def toHeightWidth(size: ImageSize):
+    return (size, size) if isinstance(size, (int,float,str)) else tuple(size)
+
 
 class MatchBatchNorm(InvLoss):
     def __init__(self, bn: BaseFakeBN, coefficient: float = 1.):
@@ -26,30 +31,33 @@ class TotalVariation(InvLoss):
     def loss(self, x: torch.tensor):
         return self.tv(x) * np.prod(x.shape[-2:]) / self.size
 
-    def __init__(self, p: int = 2, size: int=224, coefficient: float = 1.):
+    def __init__(self, p: int = 2, size: ImageSize=224, coefficient: float=1.):
         super().__init__(coefficient)
         self.tv = BaseTotalVariation(p)
-        self.size = size * size
+        size = toHeightWidth(size)
+        self.size = size[0] * size[1]
 
 
 class NormalVariation(InvLoss):
     def loss(self, x: torch.tensor):
         return self.tv(x) * np.prod(x.shape[-2:]) / self.size
 
-    def __init__(self, p: int = 2, size: Union[int,Tuple[int,int]]=224, coefficient: float = 1.):
+    def __init__(self, p: int = 2, size: ImageSize=224, coefficient: float=1.):
         super().__init__(coefficient)
         self.tv = BaseNormalVariation(p)
-        self.size = size * size if isinstance(size, int) else size[0] * size[1]
+        size = toHeightWidth(size)
+        self.size = size[0] * size[1]
 
 
 class ColorVariation(InvLoss):
     def loss(self, x: torch.tensor):
         return self.tv(x) * np.prod(x.shape[-2:]) / self.size
 
-    def __init__(self, p: int = 2, size: int = 224, coefficient: float = 1.):
+    def __init__(self, p: int=2, size: ImageSize=224, coefficient: float=1.):
         super().__init__(coefficient)
         self.tv = BaseColorVariation(p)
-        self.size = size * size
+        size = toHeightWidth(size)
+        self.size = size[0] * size[1]
 
 
 class CrossEntropyLoss(InvLoss):
