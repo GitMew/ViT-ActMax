@@ -47,12 +47,12 @@ class Args:
         parser.add_argument('-y', '--target', type=int, default=0, help='# Feature')
         parser.add_argument('-m', '--method', type=str, default='in_feat', help='What to visualize',
                             choices=["ffnn", 'in_feat', 'keys', 'queries', 'values', 'out_feat'])
-        parser.add_argument('-v', '--tv', type=float, default=1.0, help='TotalVar Lambda=v * 0.0005')
 
+        parser.add_argument('-v', '--tv', type=float, default=1.0, help='TotalVar Lambda=v * 0.0005')
+        parser.add_argument('-s', '--sign', type=int, default=1, choices=[1, -1], help='Most/Least Image')
         parser.add_argument('-g', '--grid', type=float, default=0, help='Variable "a" for development')
         parser.add_argument('-r', '--lr', type=float, default=0.1, help='Learning Rate')
         parser.add_argument('-p', '--patch', type=int, default=16, help='Patch-Size for Visualization')
-        parser.add_argument('-s', '--sign', type=int, default=1, choices=[1, -1], help='Most/Least Image')
         parser.add_argument('-d', '--dir', type=str, default=None, help='Images dir to find top5 classes')
         return parser
 

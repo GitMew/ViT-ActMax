@@ -8,6 +8,7 @@ from typing import Callable
 from dataclasses import dataclass
 from enum import Enum
 
+import numpy as np
 import torch
 import torchvision
 
@@ -20,7 +21,7 @@ from .loss import LossArray, TotalVariation
 from .loss.image_net import ViTFeatHook, ViTEnsFeatHook
 from .model import model_library as hundred_standard_models
 from .model.library import ModelLibrary
-from .saver import ExperimentSaver
+from .saver.base import ExperimentSaver, ReshapeImageSaver, ImageSaver
 from .utils import exp_starter_pack
 
 
@@ -59,17 +60,27 @@ class OptimisationTarget:
     layer_index: int
     choose_among: VectorFamily
     element_index: int
-    regularisation_constant: float
 
     @staticmethod
-    def fromArgs():
-        args = exp_starter_pack()[1]
+    def fromArgs(args):
         return OptimisationTarget(
             network_identifier=args.network,
             layer_index=args.layer,
             choose_among=VectorFamily.fromString(args.method),
-            element_index=args.feature,
-            regularisation_constant=args.tv
+            element_index=args.feature
+        )
+
+
+@dataclass
+class Hyperparameters:
+    regularisation_constant: float
+    sign: int
+
+    @staticmethod
+    def fromArgs(args):
+        return Hyperparameters(
+            regularisation_constant=args.tv,
+            sign=args.sign
         )
 
 
@@ -81,7 +92,8 @@ vit_att_hooker  = lambda model, sl, method: ViTAttHookHolder(model, sl=sl, **{me
 ###################
 ### Interpreter ###
 ###################
-def maximiseActivation(t: OptimisationTarget, model_library: ModelLibrary=hundred_standard_models,
+def maximiseActivation(t: OptimisationTarget, h: Hyperparameters, square_output=True,
+                       model_library: ModelLibrary=hundred_standard_models,
                        make_ffnn_hook: HookConstructor=vit_ffnn_hooker, make_att_hook: HookConstructor=vit_att_hooker):
     """
     The most generally applicable activation maximisation function possible.
@@ -104,25 +116,40 @@ def maximiseActivation(t: OptimisationTarget, model_library: ModelLibrary=hundre
 
     # As far as I understand it, a hook produces a dictionary with interesting results, which is extracted by a FeatHook based on the given key.
     loss = LossArray()
-    loss += ViTEnsFeatHook(hook, key=method, feat=t.element_index, coefficient=1)
-    loss += TotalVariation(2, image_size, coefficient=0.0005 * t.regularisation_constant)
+    loss += ViTEnsFeatHook(hook, key=method, feat=t.element_index, coefficient=1 * h.sign)
+    loss += TotalVariation(2, image_size, coefficient=0.0005 * h.regularisation_constant)
 
     # Visualiser setup
-    pre, post = torch.nn.Sequential(RepeatBatch(8), ColorJitter(8, shuffle_every=True),
-                                    GaussianNoise(8, True, 0.5, 400), Tile(1), Jitter()), Clip()
-    saver = ExperimentSaver(folder=f"actmax_network{t.network_identifier}", save_id=True, disk_saver=True)
+    post = Clip()
+    pre = torch.nn.Sequential(
+        RepeatBatch(8),
+        ColorJitter(8, shuffle_every=True),
+        GaussianNoise(8, True, 0.5, 400),
+        Tile(1),
+        Jitter()
+    )
+
+    folder = f"actmax_network{t.network_identifier}"
+    if not isinstance(image_size, int) and square_output:
+        try:
+            patch_size = model.config.patch_size
+        except:
+            patch_size = 16
+        n_patches             = (image_size[0] // patch_size) * (image_size[1] // patch_size)
+        patch_grid_sidelength = int(np.ceil(np.sqrt(n_patches)))
+        saver = ReshapeImageSaver(folder, patch_size=patch_size, patches_per_row=patch_grid_sidelength, save_id=False)
+    else:
+        saver = ImageSaver(folder, save_id=False)
+
     visualizer = ImageNetVisualizer(loss, saver, pre, post, print_every=10, lr=0.1, steps=400, save_every=100)
 
     # Make image
     image = new_init(image_size, batch_size=1)
-    image.data = visualizer(image, file_prefix=f"{t.choose_among} L{t.layer_index} F{t.element_index} TV{t.regularisation_constant}")
+    image.data = visualizer(image, file_prefix=f"{t.choose_among.toString()} L{t.layer_index} F{t.element_index} TV{h.regularisation_constant}")
     image = torchvision.transforms.ToPILImage()(image[0].detach().cpu())
     return image
 
 
-def main():
-    maximiseActivation(OptimisationTarget.fromArgs())
-
-
-if __name__ == "__main__":  # Needs to be run with command-line arguments.
-    main()
+def main():  # Import this from somewhere to run it.
+    args = exp_starter_pack()[1]
+    maximiseActivation(OptimisationTarget.fromArgs(args), Hyperparameters.fromArgs(args))
