@@ -114,7 +114,7 @@ def maximiseActivation(t: OptimisationTarget, model_library: ModelLibrary=hundre
     visualizer = ImageNetVisualizer(loss, saver, pre, post, print_every=10, lr=0.1, steps=400, save_every=100)
 
     # Make image
-    image = new_init(image_size, 1)
+    image = new_init(image_size, batch_size=1)
     image.data = visualizer(image, file_prefix=f"{t.choose_among} L{t.layer_index} F{t.element_index} TV{t.regularisation_constant}")
     image = torchvision.transforms.ToPILImage()(image[0].detach().cpu())
     return image

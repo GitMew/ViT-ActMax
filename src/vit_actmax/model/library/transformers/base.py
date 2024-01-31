@@ -11,7 +11,7 @@ class TransformerModel(InvertModel):
 
     def __call__(self, normalize: bool = True, grad: bool = False):
         model, image_size, batch_size, name = super(TransformerModel, self).__call__(normalize, grad)
-        up = torch.nn.Upsample(size=(image_size, image_size), mode='bilinear', align_corners=False).cuda()
+        up = torch.nn.Upsample(size=(image_size, image_size), mode='bilinear', align_corners=False).to(self._device)
         model = AugmentedModel(model, up).to(self._device)
         return model, image_size, batch_size, name
 

@@ -22,7 +22,7 @@ class InvertModel(ItemIterator):
         self.image_size, self.batch_size = image_size, batch_size
         self.normalizer = normalizer
 
-    def __call__(self, normalize: bool = True, grad: bool = False) -> (torch.nn.Module, int, int, str):
+    def __call__(self, normalize: bool=True, grad: bool=False) -> (torch.nn.Module, int, int, str):
         model = self.constructor(**self.constructor_args)
         if normalize:
             model = nn.Sequential(self.normalizer, model)
@@ -30,7 +30,7 @@ class InvertModel(ItemIterator):
 
         if not grad:
             for param in model.parameters():
-                param.requires_grad = grad
+                param.requires_grad = False
         return model.to(self._device), self.image_size, self.batch_size, self.name
 
 

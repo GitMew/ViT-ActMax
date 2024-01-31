@@ -1,4 +1,5 @@
 import pdb
+from typing import Tuple, Union
 
 import numpy as np
 import torch
@@ -25,7 +26,7 @@ class TotalVariation(InvLoss):
     def loss(self, x: torch.tensor):
         return self.tv(x) * np.prod(x.shape[-2:]) / self.size
 
-    def __init__(self, p: int = 2, size: int = 224, coefficient: float = 1.):
+    def __init__(self, p: int = 2, size: int=224, coefficient: float = 1.):
         super().__init__(coefficient)
         self.tv = BaseTotalVariation(p)
         self.size = size * size
@@ -35,10 +36,10 @@ class NormalVariation(InvLoss):
     def loss(self, x: torch.tensor):
         return self.tv(x) * np.prod(x.shape[-2:]) / self.size
 
-    def __init__(self, p: int = 2, size: int = 224, coefficient: float = 1.):
+    def __init__(self, p: int = 2, size: Union[int,Tuple[int,int]]=224, coefficient: float = 1.):
         super().__init__(coefficient)
         self.tv = BaseNormalVariation(p)
-        self.size = size * size
+        self.size = size * size if isinstance(size, int) else size[0] * size[1]
 
 
 class ColorVariation(InvLoss):
