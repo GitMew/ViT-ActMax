@@ -13,7 +13,7 @@ from vit_actmax.utils import exp_starter_pack
 
 def main():
     args = exp_starter_pack()[1]
-    layer, feature, grid, network = args.layer, args.feature, args.grid, args.network
+    layer, feature, grid, network = args.layer, args.feature, args.grid, 35
     model, image_size, _, _ = model_library[network]()
     # import pdb; pdb.set_trace()
     tv = args.tv

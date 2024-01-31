@@ -14,12 +14,12 @@ pip install -e .
 Running the experiments in this repo requires this form of installation.
 
 ### Approach B: Submodule
-Alternatively, if you *don't* want to expose this code to all projects but still want to use it, it can also be installed as a Git submodule. In your new (Git-tracked) project, do:
+Alternatively, if you *don't* want to expose this code to all projects but still want to use it, it can also be 
+installed as a Git submodule. Assuming you are either in your Git-tracked project folder (if you don't want to reuse the project as
+a submodule itself) or in your package folder (`src/YOURPACKAGE/`), run:
 ```
-mkdir lib
-cd lib
-mkdir submodules
-cd submodules
+mkdir _lib/submodules
+cd _lib/submodules
 
 git add submodule https://github.com/GitMew/ViT-ActMax.git
 cd ViT-ActMax
@@ -31,23 +31,26 @@ ln -s submodules/ViT-ActMax/src/vit_actmax vit_actmax
 ```
 On Windows, replace `ln -s` by `mklink /d` and swap the two paths. (This only works in `cmd` launched in administrator mode; Powershell syntax is more obscure.)
 
-What the above code does, in short, is to first make a place to store both a the repo code as well as its endpoint, then add it as a submodule *and* update its own submodules, and finally add a symlink that bridges the gap between `lib` and `src`. In your new project, you can now import this code with `import lib.vit_actmax`.
+What the above code does, in short, is to first make a place to store both a the repo code as well as its endpoint, then 
+add it as a submodule *and* update its own submodules, and finally add a symlink that bridges the gap between `lib` and `src`. In your new project, you can now import this code with `import lib.vit_actmax`.
 
 ## Running experiments
 After an editable install, test whether your GPU can handle the heat by running
 ```
-python experiments/it15/vis35.py --network 35 --method "in_feat" --layer 4 --feature 20 -v 0.1
+python experiments/main.py --network 35 --method "ffnn" --layer 4 --feature 20 -v 0.1
 ```
 What these parameters mean:
 - `network`: pretrained network identifier. Ranges from 0 to 99. Model 35 corresponds to ViT-B/32.
    - To get the list of networks, see the list below or run the `show_models.py` script.
-- `method`: what to maximise. Can be one of:
-   - `in_feat`: activation of a hidden neurons in an MLP.
-   - `out_feat`: activation at an output of an MLP.
-   - `keys`, `queries`, `values`: has to do with attention.
-- `layer`: layer of the maximised feature, ranging from 0 to 11 (ViT/B has 12 layers).
-- `feature`: index of the maximised feature.
-   - `in_feat`: ranging from 0 to 3071 (ViT/B has MLPs with a hidden layer of 3072 neurons).
+- `method`: which family of vectors to consider when maximising. Can be one of:
+   - `ffnn`: activation of a hidden neuron in an MLP block.
+   - `in_feat`: activation of the embeddings before they enter a self-attention block, equivalent to the output of an MLP block.
+   - `keys`, `queries`, `values`: activation of the embeddings after they have been projected in a self-attention block.
+   - `out_feat`: activation after self-attention (although before the residual connection), equivalent to the input of
+                 an MLP block.
+- `layer`: layer of the maximised target, ranging from 0 to 11 (ViT/B has 12 layers).
+- `feature`: index of the maximised target.
+   - `ffnn`: ranging from 0 to 3071 (ViT/B has MLPs with a hidden layer of 3072 neurons).
 - `v`: regularisation constant.
 
 ---
