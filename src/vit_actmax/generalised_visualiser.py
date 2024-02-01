@@ -104,7 +104,7 @@ def maximiseActivation(t: OptimisationTarget, h: Hyperparameters, square_output=
     models, both the hook constructors as well as the model library have become paramters.
     """
     # Look up the model
-    model, image_size, _, _ = model_library[t.network_identifier]()
+    model, image_size, _, model_name = model_library[t.network_identifier]()
     sl = slice(t.layer_index, t.layer_index+1)
     method = t.choose_among.toString()
 
@@ -129,7 +129,7 @@ def maximiseActivation(t: OptimisationTarget, h: Hyperparameters, square_output=
         Jitter()
     )
 
-    folder = f"actmax_network{t.network_identifier}"
+    folder = f"{t.network_identifier}_" + model_name.replace("/", "--")
     if not isinstance(image_size, int) and square_output:
         try:
             patch_size = model.config.patch_size

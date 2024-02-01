@@ -27,7 +27,7 @@ class AbstractSaver:
             stem += f"_{self._id}"
         parent = BASE_OUTPUT_DIRECTORY / self.subfolder
         parent.mkdir(exist_ok=True, parents=True)
-        return (parent / stem).with_suffix("." + self.extension).as_posix()
+        return (parent / (stem + "." + self.extension)).as_posix()
 
     def save(self, result: torch.Tensor, *path):
         full_path = self._get_mkdir_path(*path)
