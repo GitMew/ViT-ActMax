@@ -7,7 +7,7 @@ from vit_actmax.augmentation.pre import Layered
 from vit_actmax.datasets import image_net
 from vit_actmax.hooks import LayerHook
 from vit_actmax.inversion import ImageNetVisualizer
-from vit_actmax.inversion.utils import new_init
+from vit_actmax.inversion.utils import new_init, zero_batch
 from vit_actmax.loss import LossArray, TotalVariation, LayerActivationNorm, ActivationHook, MatchBatchNorm, NormalVariation
 from vit_actmax.loss import ColorVariation
 from vit_actmax.loss.hooks.activation import ActivationReluHook
@@ -32,7 +32,7 @@ def main():
 
     clipper = ClipSTD()
 
-    image = new_init(image_size, batch_size, last=None, zero=True)
+    image = new_init(image_size, batch_size, last=None, base=zero_batch)
 
     pre, post = [], Clip()
     for i in range(1000):
@@ -47,7 +47,7 @@ def main():
         saver.save(image, 'noise')
         saver.save(torch.nn.Sequential(*pre)(image), 'total')
         pre += [Layered(clipper(image))]
-        image = new_init(image_size, batch_size, last=None, zero=True)
+        image = new_init(image_size, batch_size, last=None, base=zero_batch)
 
 
 if __name__ == '__main__':

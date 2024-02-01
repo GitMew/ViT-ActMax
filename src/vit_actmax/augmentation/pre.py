@@ -120,7 +120,7 @@ class RepeatBatch(nn.Module):
         super().__init__()
         self.size = repeat
 
-    def forward(self, img: torch.tensor):
+    def forward(self, img: torch.Tensor):
         return img.repeat(self.size, 1, 1, 1)
 
 

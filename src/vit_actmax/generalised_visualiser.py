@@ -16,7 +16,7 @@ from .augmentation import Clip, Tile, Jitter, RepeatBatch, ColorJitter
 from .augmentation.pre import GaussianNoise
 from .hooks.transformer.vit import ViTAttHookHolder, ViTGeLUHook, ViTAbsHookHolder
 from .inversion import ImageNetVisualizer
-from .inversion.utils import new_init
+from .inversion.utils import new_init, ImageBatchCreator, random_batch
 from .loss import LossArray, TotalVariation
 from .loss.image_net import ViTFeatHook, ViTEnsFeatHook
 from .model import model_library as hundred_standard_models
@@ -62,7 +62,7 @@ class OptimisationTarget:
     element_index: int
 
     @staticmethod
-    def fromArgs(args):
+    def fromArgs(args) -> "OptimisationTarget":
         return OptimisationTarget(
             network_identifier=args.network,
             layer_index=args.layer,
@@ -75,12 +75,31 @@ class OptimisationTarget:
 class Hyperparameters:
     regularisation_constant: float
     sign: int
+    iterations: int
+    learning_rate: float
 
     @staticmethod
-    def fromArgs(args):
+    def fromArgs(args) -> "Hyperparameters":
         return Hyperparameters(
             regularisation_constant=args.tv,
-            sign=args.sign
+            sign=args.sign,
+            iterations=args.iterations,
+            learning_rate=args.lr
+        )
+
+
+@dataclass
+class OutputSettings:
+    make_image_square: bool
+    log_every: int
+    save_every: int
+
+    @staticmethod
+    def fromArgs(args) -> "OutputSettings":
+        return OutputSettings(
+            make_image_square=args.output_square,
+            log_every=args.log_every,
+            save_every=args.save_every
         )
 
 
@@ -89,12 +108,18 @@ vit_ffnn_hooker = lambda model, sl, method: ViTGeLUHook(model, sl=sl)
 vit_att_hooker  = lambda model, sl, method: ViTAttHookHolder(model, sl=sl, **{method: True})
 
 
+@dataclass
+class Constructors:
+    model_library: ModelLibrary=hundred_standard_models
+    make_ffnn_hook: HookConstructor=vit_ffnn_hooker
+    make_att_hook: HookConstructor=vit_att_hooker
+    make_image_base: ImageBatchCreator=random_batch
+
+
 ###################
 ### Interpreter ###
 ###################
-def maximiseActivation(t: OptimisationTarget, h: Hyperparameters, square_output=True,
-                       model_library: ModelLibrary=hundred_standard_models,
-                       make_ffnn_hook: HookConstructor=vit_ffnn_hooker, make_att_hook: HookConstructor=vit_att_hooker):
+def maximiseActivation(t: OptimisationTarget, h: Hyperparameters, v: OutputSettings, c: Constructors):
     """
     The most generally applicable activation maximisation function possible.
     Takes a target to maximise, hooks into the parts of the model that track this target, and saves the resulting image.
@@ -104,15 +129,15 @@ def maximiseActivation(t: OptimisationTarget, h: Hyperparameters, square_output=
     models, both the hook constructors as well as the model library have become paramters.
     """
     # Look up the model
-    model, image_size, _, model_name = model_library[t.network_identifier]()
+    model, image_size, _, model_name = c.model_library[t.network_identifier]()
     sl = slice(t.layer_index, t.layer_index+1)
     method = t.choose_among.toString()
 
     # Make a hook that will track all activations of a certain family in a certain layer.
     if t.choose_among == VectorFamily.FFNN_HIDDEN_ACTIVATION:
-        hook = make_ffnn_hook(model, sl, method)
+        hook = c.make_ffnn_hook(model, sl, method)
     else:
-        hook = make_att_hook(model, sl, method)
+        hook = c.make_att_hook(model, sl, method)
 
     # As far as I understand it, a hook produces a dictionary with interesting results, which is extracted by a FeatHook based on the given key.
     loss = LossArray()
@@ -130,7 +155,8 @@ def maximiseActivation(t: OptimisationTarget, h: Hyperparameters, square_output=
     )
 
     folder = f"{t.network_identifier}_" + model_name.replace("/", "--")
-    if not isinstance(image_size, int) and square_output:
+    stem   = f"{t.choose_among.toString()}-L{str(t.layer_index).zfill(2)}-F{str(t.element_index).zfill(4)}-TV{h.regularisation_constant}"
+    if not isinstance(image_size, int) and v.make_image_square:
         try:
             patch_size = model.config.patch_size
         except:
@@ -141,15 +167,21 @@ def maximiseActivation(t: OptimisationTarget, h: Hyperparameters, square_output=
     else:
         saver = ImageSaver(folder, save_id=False)
 
-    visualizer = ImageNetVisualizer(loss, saver, pre, post, print_every=10, lr=0.1, steps=400, save_every=100)
+    visualizer = ImageNetVisualizer(loss, saver, pre, post, lr=h.learning_rate, steps=h.iterations,
+                                    save_every=v.save_every, print_every=v.log_every)
 
     # Make image
-    image = new_init(image_size, batch_size=1)
-    image.data = visualizer(image, file_prefix=f"{t.choose_among.toString()} L{t.layer_index} F{t.element_index} TV{h.regularisation_constant}")
+    image = new_init(image_size, batch_size=1, base=c.make_image_base)
+    image.data = visualizer(image, file_prefix=stem)
     image = torchvision.transforms.ToPILImage()(image[0].detach().cpu())
     return image
 
 
 def main():  # Import this from somewhere to run it.
     args = exp_starter_pack()[1]
-    maximiseActivation(OptimisationTarget.fromArgs(args), Hyperparameters.fromArgs(args))
+    maximiseActivation(
+        OptimisationTarget.fromArgs(args),
+        Hyperparameters.fromArgs(args),
+        OutputSettings.fromArgs(args),
+        Constructors()
+    )

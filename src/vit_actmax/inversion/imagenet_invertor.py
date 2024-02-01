@@ -40,7 +40,7 @@ class ImageNetVisualizer:
             if i % self.print_every == 0:
                 print(f'{i}\t{self.loss}', flush=True)
             if i % self.save_every == 0 and self.saver is not None:
-                self.saver.save(img, file_prefix + "_it" + str(i).zfill(3))
+                self.saver.save(img, file_prefix + "-iter" + str(i).zfill(4))
 
             # loss.backward(retain_graph=True)
             loss.backward()
@@ -53,6 +53,6 @@ class ImageNetVisualizer:
             torch.cuda.empty_cache()
 
         if self.steps % self.save_every != 0 and self.saver is not None:  # We know i == self.steps was the last iteration that was done.
-            self.saver.save(img, file_prefix + "_it" + str(self.steps).zfill(3))
+            self.saver.save(img, file_prefix + "-iter" + str(self.steps).zfill(4))
         optimizer.state = collections.defaultdict(dict)
         return img
