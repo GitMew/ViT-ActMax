@@ -50,6 +50,10 @@ class Args:
 
         parser.add_argument('-v', '--tv', type=float, default=1.0,
                             help='Regularisation constant for TotalVar. Will be scaled by 0.0005.')
+        parser.add_argument('--no_preaugment', type=bool, default=False,
+                            help="Whether to disable the preaugmentation used by Ghiasi & Kamezi to jitter ViT input.")
+        parser.add_argument('--n_patches', type=int, default=0,
+                            help="Amount of patches to send into the model to optimise. (Defaults to the standard model input.)")
         parser.add_argument('-r', '--lr', type=float, default=0.1,
                             help='Learning rate of gradient ascent.')
         parser.add_argument('-s', '--sign', type=int, default=1, choices=[1, -1],

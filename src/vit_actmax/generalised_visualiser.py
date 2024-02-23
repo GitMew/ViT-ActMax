@@ -73,6 +73,9 @@ class OptimisationTarget:
 
 @dataclass
 class Hyperparameters:
+    n_patches: int
+    disable_preaugmentation: bool
+
     regularisation_constant: float
     sign: int
     iterations: int
@@ -81,6 +84,8 @@ class Hyperparameters:
     @staticmethod
     def fromArgs(args) -> "Hyperparameters":
         return Hyperparameters(
+            n_patches=args.n_patches,
+            disable_preaugmentation=args.no_preaugment,
             regularisation_constant=args.tv,
             sign=args.sign,
             iterations=args.iterations,
@@ -137,6 +142,9 @@ def maximiseActivation(t: OptimisationTarget, h: Hyperparameters, v: OutputSetti
     except:
         patch_size = 16
 
+    if h.n_patches != 0:
+        image_size = (patch_size, patch_size*h.n_patches)
+
     # Make a hook that will track all activations of a certain family in a certain layer.
     if t.choose_among == VectorFamily.FFNN_HIDDEN_ACTIVATION:
         hook = c.make_ffnn_hook(model, sl, method)
@@ -150,13 +158,16 @@ def maximiseActivation(t: OptimisationTarget, h: Hyperparameters, v: OutputSetti
 
     # Visualiser setup
     post = Clip()
-    pre = torch.nn.Sequential(
-        RepeatBatch(8),
-        ColorJitter(8, shuffle_every=True),
-        GaussianNoise(8, True, 0.5, 400),
-        Tile(1),
-        Jitter()
-    )
+    if h.disable_preaugmentation:
+        pre = torch.nn.Sequential()
+    else:
+        pre = torch.nn.Sequential(
+            RepeatBatch(8),
+            ColorJitter(8, shuffle_every=True),
+            GaussianNoise(8, True, 0.5, 400),
+            Tile(1),
+            Jitter()
+        )
 
     folder = f"{t.network_identifier}_" + model_name.replace("/", "--")
     stem   = f"{t.choose_among.toString()}-L{str(t.layer_index).zfill(2)}-F{str(t.element_index).zfill(4)}-TV{h.regularisation_constant}"
