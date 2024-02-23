@@ -16,7 +16,7 @@ from .augmentation import Clip, Tile, Jitter, RepeatBatch, ColorJitter
 from .augmentation.pre import GaussianNoise
 from .hooks.transformer.vit import ViTAttHookHolder, ViTGeLUHook, ViTAbsHookHolder
 from .inversion import ImageNetVisualizer
-from .inversion.utils import new_init, ImageBatchCreator, random_batch
+from .inversion.utils import *
 from .loss import LossArray, TotalVariation
 from .loss.image_net import ViTFeatHook, ViTEnsFeatHook
 from .model import model_library as hundred_standard_models
@@ -132,6 +132,10 @@ def maximiseActivation(t: OptimisationTarget, h: Hyperparameters, v: OutputSetti
     model, image_size, _, model_name = c.model_library[t.network_identifier]()
     sl = slice(t.layer_index, t.layer_index+1)
     method = t.choose_among.toString()
+    try:
+        patch_size = model.config.patch_size
+    except:
+        patch_size = 16
 
     # Make a hook that will track all activations of a certain family in a certain layer.
     if t.choose_among == VectorFamily.FFNN_HIDDEN_ACTIVATION:
@@ -156,11 +160,7 @@ def maximiseActivation(t: OptimisationTarget, h: Hyperparameters, v: OutputSetti
 
     folder = f"{t.network_identifier}_" + model_name.replace("/", "--")
     stem   = f"{t.choose_among.toString()}-L{str(t.layer_index).zfill(2)}-F{str(t.element_index).zfill(4)}-TV{h.regularisation_constant}"
-    if not isinstance(image_size, int) and v.make_image_square:
-        try:
-            patch_size = model.config.patch_size
-        except:
-            patch_size = 16
+    if not isinstance(image_size, int) and v.make_image_square:  # If the image size isn't an int, it's a rectangle. Rectangular images can be reshaped into a square after generation.
         n_patches             = (image_size[0] // patch_size) * (image_size[1] // patch_size)
         patch_grid_sidelength = int(np.ceil(np.sqrt(n_patches)))
         saver = ReshapeImageSaver(folder, patch_size=patch_size, patches_per_row=patch_grid_sidelength, save_id=False)
@@ -171,7 +171,7 @@ def maximiseActivation(t: OptimisationTarget, h: Hyperparameters, v: OutputSetti
                                     save_every=v.save_every, print_every=v.log_every)
 
     # Make image
-    image = new_init(image_size, batch_size=1, base=c.make_image_base)
+    image = new_init(image_size, batch_size=1, patch_size=patch_size, base=c.make_image_base)
     image.data = visualizer(image, file_prefix=stem)
     image = torchvision.transforms.ToPILImage()(image[0].detach().cpu())
     return image

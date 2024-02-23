@@ -2,19 +2,19 @@ from typing import Union, Tuple, Callable
 import torch
 
 
-ImageBatchCreator = Callable[[int,int,int], torch.Tensor]  # B x C x H x W
+ImageBatchCreator = Callable[[int,int,int,int], torch.Tensor]  # batch size, height, width, patch size -> Tensor[B x C x H x W]
 
-random_batch = lambda batch_size,height,width: torch.rand(size=(batch_size, 3, height, width))
-zero_batch   = lambda batch_size,height,width: torch.zeros(size=(batch_size, 3, height, width))
+random_batch: ImageBatchCreator = lambda batch_size,height,width,_: torch.rand(size=(batch_size, 3, height, width))
+zero_batch: ImageBatchCreator   = lambda batch_size,height,width,_: torch.zeros(size=(batch_size, 3, height, width))
 
 
-def new_init(size: Union[int,Tuple[int,int]], batch_size: int=1, last: torch.nn=None, padding: int=-1,
+def new_init(size: Union[int,Tuple[int,int]], batch_size: int=1, patch_size: int=16, last: torch.nn=None, padding: int=-1,
              base: ImageBatchCreator=random_batch) -> torch.Tensor:
     if isinstance(size, int):
         size = (size,size)
 
     height, width = size
-    output = base(batch_size, height, width)
+    output = base(batch_size, height, width, patch_size)
     # output += 0.5
     output = output.cuda()
     if last is not None:
